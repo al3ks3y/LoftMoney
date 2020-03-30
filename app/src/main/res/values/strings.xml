@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">LoftMoney</string>
+    <string name="addItemName">Name</string>
+    <string name="textview">Add Item</string>
+    <string name="addItemPrice">Price</string>
+    <string name="Add">Add</string>
+
 </resources>
