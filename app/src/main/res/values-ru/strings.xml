@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ЛофтДеньги</string>
+    <string name="addItemName">Название</string>
+    <string name="textview">Добавить элемент</string>
+    <string name="addItemPrice">Цена</string>
+    <string name="Add">Добавить</string>
+</resources>
