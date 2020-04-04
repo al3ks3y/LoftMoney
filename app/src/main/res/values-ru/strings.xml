@@ -4,4 +4,8 @@
     <string name="textview">Добавить элемент</string>
     <string name="addItemPrice">Цена</string>
     <string name="Add">Добавить</string>
+    <string name="add_button" type="id">Добавить</string>
+    <string name="price_with_currency">%1$s ₽</string>
+    <string name="expences">Расходы</string>
+    <string name="income">Доходы</string>
 </resources>
