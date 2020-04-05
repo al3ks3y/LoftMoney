@@ -4,5 +4,9 @@
     <string name="textview">Add Item</string>
     <string name="addItemPrice">Price</string>
     <string name="Add">Add</string>
+    <string name="add_button" type="id">Add</string>
+    <string name="price_with_currency">%s $</string>
+    <string name="expences">Expenses</string>
+    <string name="income">Incomes</string>
 
 </resources>
