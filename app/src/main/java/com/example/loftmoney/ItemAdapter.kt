@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.String
 import java.util.*
 
 class ItemsAdapter(private var colorId: Int) : RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>() {
@@ -37,7 +36,7 @@ class ItemsAdapter(private var colorId: Int) : RecyclerView.Adapter<ItemsAdapter
         fun bindItem(item: Item) {
             mNameView.setText(item.name)
             mPriceView.text = mPriceView.context.resources
-                .getString(R.string.price_with_currency, String.valueOf(item.price))
+                .getString(R.string.price_with_currency,item.price.toString())
         }
 
         init {
