@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,7 +18,7 @@ import retrofit2.Response
 
 class BudgetFragment : Fragment() {
     companion object StaticFragment{
-        private val REQUEST_CODE = 100
+        val REQUEST_CODE = 100
         val COLOR_ID = "colorId"
         val TYPE = "fragmentType"
         fun newInstance(colorId: Int, type: String?): BudgetFragment {
@@ -31,7 +31,7 @@ class BudgetFragment : Fragment() {
         }
     }
     private lateinit var mAdapter: ItemsAdapter
-
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var mApi: Api
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,14 +46,8 @@ class BudgetFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_budget, null)
-        val callAddButton = view.findViewById<Button>(R.id.call_add_item_activity)
-        callAddButton.setOnClickListener {
-            startActivityForResult(
-                Intent(activity, AddItemActivity::class.java),
-                REQUEST_CODE
-            )
-        }
         val recyclerView: RecyclerView = view.findViewById(R.id.budget_item_list)
+        swipeRefreshLayout=view.findViewById(R.id.swipe_refresh_layout)
         mAdapter = ItemsAdapter(arguments!!.getInt(COLOR_ID))
         recyclerView.adapter = mAdapter
         return view
@@ -62,13 +56,13 @@ class BudgetFragment : Fragment() {
         requestCode: Int, resultCode: Int, data: Intent?
     ) {
         super.onActivityResult(requestCode, resultCode, data)
-        val price: Int
-        price = try {
+        val price: Int = try {
             data!!.getStringExtra("price").toInt()
         } catch (e: NumberFormatException) {
             0
         }
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val realPrice=price
             val name = data!!.getStringExtra("name")
             val token =
                 PreferenceManager.getDefaultSharedPreferences(context).getString(MainActivity.TOKEN, "")
@@ -79,7 +73,7 @@ class BudgetFragment : Fragment() {
                     call: Call<Status>, response: Response<Status>
                 ) {
                     if (response.body()?.status.equals("success")) {
-                        mAdapter!!.addItem(Item(name, price))
+                        mAdapter.addItem(Item(name, realPrice))
                     }
                 }
 
@@ -95,7 +89,7 @@ class BudgetFragment : Fragment() {
             PreferenceManager.getDefaultSharedPreferences(context).getString(MainActivity.TOKEN, "")
         val items =
             mApi.getItems(arguments?.getString(TYPE).toString(), token.toString())
-        items!!.enqueue(object : Callback<List<Item?>?> {
+        items.enqueue(object : Callback<List<Item?>?> {
 
             override fun onResponse(call: Call<List<Item?>?>, response: Response<List<Item?>?>) {
                 val itemsBody = response.body()!!
@@ -105,6 +99,7 @@ class BudgetFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<List<Item?>?>, t: Throwable) {
+                swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(context, "Application has Crashed", Toast.LENGTH_LONG).show();
             }
         })

@@ -8,5 +8,7 @@
     <string name="price_with_currency">%s $</string>
     <string name="expences">Expenses</string>
     <string name="income">Incomes</string>
+    <string name="enter">Enter</string>
+    <string name="activity_main_toolbar_title">Budget account</string>
 
 </resources>

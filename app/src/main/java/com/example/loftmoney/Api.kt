@@ -14,7 +14,7 @@ interface Api {
     fun getItems(
         @Query("type") type: String,
         @Query("auth-token") token: String
-    ): Call<List<Item?>?>?
+    ): Call<List<Item?>?>
 
     @POST("items/add")
     fun addItem(

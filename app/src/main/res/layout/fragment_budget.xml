@@ -8,17 +8,15 @@
         tools:context=".MainActivity"
 >
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/budget_item_list"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            android:layout_height="wrap_content">
 
-    <Button
-            android:id="@+id/call_add_item_activity"
-            android:text="@string/add_button"
-            android:layout_gravity="bottom|center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/budget_item_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>
