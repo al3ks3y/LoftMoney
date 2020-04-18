@@ -9,6 +9,11 @@
     <string name="expences">Expenses</string>
     <string name="income">Incomes</string>
     <string name="enter">Enter</string>
+    <string name="selected">Selected: %1$s</string>
+    <string name="remove">Remove</string>
+    <string name="confirmation">Are you sure you want to delete these items?</string>
     <string name="activity_main_toolbar_title">Budget account</string>
+    <string name="balance">Balance</string>
+    <string name="finances">Available money</string>
 
 </resources>

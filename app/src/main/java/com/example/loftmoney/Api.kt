@@ -21,4 +21,13 @@ interface Api {
         @Body request: AddItemRequest,
         @Query("auth-token") token: String
     ): Call<Status>
+
+    @POST("items/remove")
+    fun removeItem(
+        @Query("id") id: String?,
+        @Query("auth-token") token: String?
+    ): Call<Status?>?
+
+    @GET("balance")
+    fun getBalance(@Query("auth-token") token: String?): Call<BalanceResponce>
 }

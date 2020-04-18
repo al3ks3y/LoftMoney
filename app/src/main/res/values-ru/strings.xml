@@ -9,5 +9,10 @@
     <string name="expences">Расходы</string>
     <string name="income">Доходы</string>
     <string name="enter">Войти</string>
+    <string name="selected">Выбрано: %1$s</string>
+    <string name="remove">Удалить</string>
+    <string name="confirmation">Вы уверены, что хотите удалить эти элементы?</string>
     <string name="activity_main_toolbar_title">Учет бюджета</string>
+    <string name="balance">Баланс</string>
+    <string name="finances">Доступные финансы</string>
 </resources>

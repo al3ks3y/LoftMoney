@@ -10,9 +10,9 @@
 >
 
     <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_auth_icon"/>
+            android:layout_width="93dp"
+            android:layout_height="93dp"
+            android:src="@drawable/ic_action_name" android:contentDescription="@string/app_name"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -35,8 +35,9 @@
             android:paddingRight="40dp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            app:cornerRadius="24dp"
+            app:cornerRadius="40dp"
             app:backgroundTint="@android:color/white"
+            style="@style/ShapeAppearanceOverlay.DifferentCornerSize"
     />
 
 </LinearLayout>
