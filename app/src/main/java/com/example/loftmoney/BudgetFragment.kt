@@ -48,19 +48,27 @@ class BudgetFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_budget, null)
         val recyclerView: RecyclerView = view.findViewById(R.id.budget_item_list)
         swipeRefreshLayout=view.findViewById(R.id.swipe_refresh_layout)
+        swipeRefreshLayout.setOnRefreshListener {
+            loadItems()
+        }
+        loadItems()
         mAdapter = ItemsAdapter(arguments!!.getInt(COLOR_ID))
         recyclerView.adapter = mAdapter
         return view
     }
+
     override fun onActivityResult(
         requestCode: Int, resultCode: Int, data: Intent?
     ) {
         super.onActivityResult(requestCode, resultCode, data)
-        val price: Int = try {
-            data!!.getStringExtra("price").toInt()
+
+        var price: Int
+        try {
+            price = Integer.parseInt(data!!.getStringExtra("price")!!)
         } catch (e: NumberFormatException) {
-            0
+            price = 0
         }
+
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val realPrice=price
             val name = data!!.getStringExtra("name")
@@ -82,6 +90,9 @@ class BudgetFragment : Fragment() {
                 }
             })
         }
+        if (swipeRefreshLayout.isRefreshing) {
+            swipeRefreshLayout.isRefreshing=false
+        }
     }
 
     fun loadItems() {
@@ -92,6 +103,8 @@ class BudgetFragment : Fragment() {
         items.enqueue(object : Callback<List<Item?>?> {
 
             override fun onResponse(call: Call<List<Item?>?>, response: Response<List<Item?>?>) {
+                swipeRefreshLayout.isRefreshing = false
+                mAdapter.clearItems()
                 val itemsBody = response.body()!!
                 for (item in itemsBody) {
                     mAdapter.addItem(item!!)
@@ -103,11 +116,13 @@ class BudgetFragment : Fragment() {
                 Toast.makeText(context, "Application has Crashed", Toast.LENGTH_LONG).show();
             }
         })
+        swipeRefreshLayout.setColorSchemeResources(
+            android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light
+        )
     }
-
-
-
-
 
 
 }

@@ -24,6 +24,9 @@ class ItemsAdapter(private var colorId: Int) : RecyclerView.Adapter<ItemsAdapter
         mItemsList.add(item)
         notifyDataSetChanged()
     }
+    fun clearItems(){
+        mItemsList.clear()
+    }
 
     override fun getItemCount(): Int {
         return mItemsList.size
