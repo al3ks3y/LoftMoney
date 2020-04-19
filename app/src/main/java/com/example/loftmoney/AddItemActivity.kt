@@ -78,7 +78,11 @@ class AddItemActivity : AppCompatActivity() {
     }
 
     fun checkEditTextHasText() {
-        addButton.setEnabled(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(price))
+        addButton.isEnabled = !TextUtils.isEmpty(name) && !TextUtils.isEmpty(price)
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.from_left_in, R.anim.from_right_out)
     }
 }
 

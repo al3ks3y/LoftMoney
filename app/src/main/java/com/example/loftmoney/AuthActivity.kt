@@ -49,7 +49,7 @@ class AuthActivity : AppCompatActivity() {
                 editor.apply()
             }
 
-            override fun onFailure(call: Call<Status>, t: Throwable) {}
+            override fun onFailure(call: Call<Status>, t: Throwable) {t.printStackTrace()}
         })
     }
 }

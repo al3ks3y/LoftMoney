@@ -1,11 +1,10 @@
 package com.example.loftmoney
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
@@ -16,7 +15,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class BudgetFragment : Fragment() {
+class BudgetFragment : Fragment(), ItemsAdapterListener, ActionMode.Callback{
     companion object StaticFragment{
         val REQUEST_CODE = 100
         val COLOR_ID = "colorId"
@@ -33,11 +32,11 @@ class BudgetFragment : Fragment() {
     private lateinit var mAdapter: ItemsAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var mApi: Api
+    private var mActionMode:ActionMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mApi = (activity!!.application as LoftApp).api
-        loadItems()
     }
 
     override fun onCreateView(
@@ -53,45 +52,47 @@ class BudgetFragment : Fragment() {
         }
         loadItems()
         mAdapter = ItemsAdapter(arguments!!.getInt(COLOR_ID))
+        mAdapter.setListener(this)
         recyclerView.adapter = mAdapter
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadItems()
     }
 
     override fun onActivityResult(
         requestCode: Int, resultCode: Int, data: Intent?
     ) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        var price: Int
-        try {
-            price = Integer.parseInt(data!!.getStringExtra("price")!!)
-        } catch (e: NumberFormatException) {
-            price = 0
-        }
-
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val realPrice=price
+            val price: Int
+            price = try {
+                data!!.getStringExtra("price").toInt()
+            } catch (e: NumberFormatException) {
+                0
+            }
             val name = data!!.getStringExtra("name")
-            val token =
-                PreferenceManager.getDefaultSharedPreferences(context).getString(MainActivity.TOKEN, "")
-            val call: Call<Status> =
-                mApi.addItem(AddItemRequest(name, arguments!!.getString(TYPE)!!, price), token.toString())
+            val token = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(MainActivity.TOKEN, "")
+            val type=arguments?.getString(TYPE)
+            val call =
+                mApi.addItem(AddItemRequest(name, type!!, price), token!!)
             call.enqueue(object : Callback<Status> {
                 override fun onResponse(
                     call: Call<Status>, response: Response<Status>
                 ) {
-                    if (response.body()?.status.equals("success")) {
-                        mAdapter.addItem(Item(name, realPrice))
+                    if (response.body()!!.status.equals("success")) {
+                        loadItems()
                     }
                 }
 
                 override fun onFailure(call: Call<Status>, t: Throwable) {
+                    Toast.makeText(context,t.localizedMessage,Toast.LENGTH_LONG).show()
                     t.printStackTrace()
                 }
             })
-        }
-        if (swipeRefreshLayout.isRefreshing) {
-            swipeRefreshLayout.isRefreshing=false
         }
     }
 
@@ -109,6 +110,7 @@ class BudgetFragment : Fragment() {
                 for (item in itemsBody) {
                     mAdapter.addItem(item!!)
                 }
+                (activity as MainActivity?)?.loadBalance()
             }
 
             override fun onFailure(call: Call<List<Item?>?>, t: Throwable) {
@@ -123,6 +125,69 @@ class BudgetFragment : Fragment() {
             android.R.color.holo_red_light
         )
     }
+    override fun onItemClick(item: Item?, position: Int) {
+        mAdapter.clearItem(position)
+        mActionMode?.title = getString(R.string.selected, java.lang.String.valueOf(mAdapter.selectedSize))
+    }
 
+    override fun onItemLongClick(item: Item?, position: Int) {
+        if (mActionMode == null) {
+            activity!!.startActionMode(this)
+        }
+        mAdapter.toggleItem(position)
+        mActionMode?.title = getString(R.string.selected, java.lang.String.valueOf(mAdapter.selectedSize))
+    }
+
+    override fun onCreateActionMode(actionMode: ActionMode, menu: Menu?): Boolean {
+        mActionMode = actionMode
+        return true
+    }
+
+    override fun onPrepareActionMode(actionMode: ActionMode?, menu: Menu?): Boolean {
+        val menuInflater = MenuInflater(activity)
+        menuInflater.inflate(R.menu.menu_delete, menu)
+        return true
+    }
+
+    override fun onActionItemClicked(
+        actionMode: ActionMode?,
+        menuItem: MenuItem
+    ): Boolean {
+        if (menuItem.itemId == R.id.remove) {
+            AlertDialog.Builder(context)
+                .setMessage(R.string.confirmation)
+                .setPositiveButton(
+                    android.R.string.yes
+                ) { dialogInterface, i -> removeItems() }
+                .setNegativeButton(
+                    android.R.string.no
+                ) { dialogInterface, i -> }.show()
+        }
+        return true
+    }
+
+    private fun removeItems() {
+        val token = PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(MainActivity.TOKEN, "")
+        val selectedItems: List<Int> = mAdapter.selectedItemIds
+        for (itemId in selectedItems) {
+            val call = mApi.removeItem(itemId.toString(), token)
+            call!!.enqueue(object : Callback<Status?> {
+                override fun onResponse(
+                    call: Call<Status?>, response: Response<Status?>
+                ) {
+                    loadItems()
+                    mAdapter.clearSelections()
+                }
+
+                override fun onFailure(call: Call<Status?>, t: Throwable) {}
+            })
+        }
+    }
+
+    override fun onDestroyActionMode(actionMode: ActionMode?) {
+        mActionMode = null
+        mAdapter.clearSelections()
+    }
 
 }

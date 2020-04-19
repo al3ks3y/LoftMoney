@@ -1,3 +1,3 @@
 package com.example.loftmoney
 
-data class Item(var name:String, var price:Int)
+data class Item(var name:String, var price:Int, var id:Int)
